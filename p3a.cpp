@@ -114,6 +114,7 @@ int main(int argc, char *argv[]) {
     // Binarize the image
     double maxVal = 255; // Assuming the image is 8-bit
     Mat binarizedImage;
+    Mat thinnedImage;
     threshold(src, binarizedImage, maxVal * 0.5, 255, THRESH_BINARY);
 
     thinning(binarizedImage, thinnedImage); // Ensure this line applies thinning
