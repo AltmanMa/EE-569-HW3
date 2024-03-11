@@ -1,11 +1,13 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
+#include <utility>
+#include <fstream>
 
 using namespace cv;
 using namespace std;
 
 // Function to detect and return matched points using SIFT or SURF
-vector<Point2f> detectAndMatchFeatures(Mat img1, Mat img2) {
+pair<vector<Point2f>, vector<Point2f>> detectAndMatchFeatures(Mat img1, Mat img2) {
     // 初始化 SIFT 或 SURF 检测器
     // 注意：根据你的 OpenCV 版本和配置，这里可能需要变动
     Ptr<Feature2D> detector = SIFT::create();
@@ -92,40 +94,49 @@ Mat stitchImages(vector<Mat>& images) {
 }
 
 Mat readRawImage(const string& filename, int width, int height) {
+    // 计算图像数据大小
+    int size = width * height * 3; // 3 通道
+
+    // 打开文件
     ifstream file(filename, ios::binary);
     if (!file) {
         cerr << "Cannot open file: " << filename << endl;
         exit(1);
     }
 
-    Mat image = Mat(height, width, CV_8UC3);
-    file.read(reinterpret_cast<char*>(image.data), width * height * 3);
-
+    // 读取数据
+    vector<unsigned char> buffer(size);
+    file.read(reinterpret_cast<char*>(buffer.data()), size);
     if (!file) {
         cerr << "Error reading file: " << filename << endl;
         exit(1);
     }
 
+    // 将数据转换为 Mat 对象
+    Mat image(height, width, CV_8UC3, buffer.data());
+    // OpenCV 默认顺序为 BGR，如果原始数据为 RGB，需要转换
+    cvtColor(image, image, COLOR_RGB2BGR);
+
     return image;
 }
-
 int main() {
     // 图像的宽度和高度
     const int width = 605;
     const int height = 454;
 
     // 图像文件名
-    vector<string> filenames = {
-        "raw_images/toys_left.raw",
-        "raw_images/toys_middle.raw",
-        "raw_images/toys_right.raw"
-    };
+    string path_to_image1 = "raw_images/toys_left.raw";
+    string path_to_image2 = "raw_images/toys_middle.raw";
+    string path_to_image3 = "raw_images/toys_right.raw";
 
-    vector<Mat> images;
-    for (const string& filename : filenames) {
-        Mat img = readRawImage(filename, width, height);
-        images.push_back(img);
-    }
+    // 读取图像
+    Mat image1 = readRawImage(path_to_image1, 605, 454);
+    Mat image2 = readRawImage(path_to_image2, 605, 454);
+    Mat image3 = readRawImage(path_to_image3, 605, 454);
+
+
+    vector<Mat> images = {image1, image2, image3};
+
 
     // 现在我们有了三个 cv::Mat 图像对象，可以将它们拼接在一起
     Mat panorama = stitchImages(images);
