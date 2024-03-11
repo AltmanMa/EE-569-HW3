@@ -60,12 +60,17 @@ void thinning(Mat& src, Mat& dst) {
     dst *= 255; // De-normalize the image
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        cout << "Usage: " << argv[0] << " <ImagePath>" << endl;
+        return -1;
+    }
+
     // Load the image
-    Mat src = imread("path_to_your_image.jpg", IMREAD_GRAYSCALE);
+    Mat src = imread(argv[1], IMREAD_GRAYSCALE);
     if (src.empty()) {
-        cout << "Could not read the image" << endl;
-        return 1;
+        cout << "Could not read the image: " << argv[1] << endl;
+        return -1;
     }
 
     // Binarize the image
@@ -80,6 +85,8 @@ int main() {
 
     // Save the result
     imwrite("thinned_image.jpg", thinnedImage);
+
+    cout << "Thinning completed. Result saved as thinned_image.jpg" << endl;
 
     return 0;
 }
