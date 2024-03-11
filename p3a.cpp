@@ -62,8 +62,15 @@ void thinning(Mat& src, Mat& dst) {
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
-        cout << "Usage: " << argv[0] << " <ImagePath>" << endl;
+        cout << "Usage: " << argv[0] << " <ImagePath> [OutputImagePath]" << endl;
         return -1;
+    }
+
+    string outputImagePath;
+    if (argc >= 3) {
+        outputImagePath = argv[2]; // Use provided output file name
+    } else {
+        outputImagePath = "thinned_" + string(argv[1]); // Append a prefix to the input file name
     }
 
     // Load the image
@@ -84,9 +91,9 @@ int main(int argc, char *argv[]) {
     thinning(binarizedImage, thinnedImage);
 
     // Save the result
-    imwrite("thinned_image.jpg", thinnedImage);
+    imwrite(outputImagePath, thinnedImage);
 
-    cout << "Thinning completed. Result saved as thinned_image.jpg" << endl;
+    cout << "Thinning completed. Result saved as " << outputImagePath << endl;
 
     return 0;
 }
