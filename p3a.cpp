@@ -46,23 +46,36 @@ void thinningIteration(Mat& img, int iter) {
 }
 
 // Function to perform the thinning operation on binary images
-void thinning(Mat& src, Mat& dst) {
+void thinning(Mat& src, Mat& dst, const string& outputPath) {
     src.copyTo(dst);
     dst /= 255; // Normalize the image
 
     Mat prev = Mat::zeros(dst.size(), CV_8UC1);
     Mat diff;
+    int iteration = 0; // Keep track of the iteration number
 
     do {
         thinningIteration(dst, 0);
         thinningIteration(dst, 1);
         absdiff(dst, prev, diff);
         dst.copyTo(prev);
-    }
-    while (cv::countNonZero(diff) > 0);
 
-    dst *= 255; // De-normalize the image
+        iteration++; // Increment iteration count
+
+        // Save intermediate result at 20th iteration
+        if (iteration == 5) {
+            Mat intermediateResult;
+            dst *= 255; // De-normalize the image for saving
+            imwrite(outputPath + "_intermediate_" + to_string(iteration) + ".png", dst);
+            dst /= 255; // Normalize back for further processing
+        }
+
+    } while (cv::countNonZero(diff) > 0 && iteration < 100); // Added iteration limit for safety
+
+    dst *= 255; // De-normalize the image for saving
+    imwrite(outputPath + "_final.png", dst);
 }
+
 
 Mat loadRawImage(const string& filename) {
     ifstream file(filename, ios::binary);
