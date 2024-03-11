@@ -6,8 +6,8 @@ using namespace cv;
 using namespace std;
 
 // Assuming the size of the image is known beforehand
-const int WIDTH = 256; // Example width
-const int HEIGHT = 256; // Example height
+const int WIDTH = 252; // Example width
+const int HEIGHT = 252; // Example height
 
 Mat loadRawImage(const string& filename) {
     ifstream file(filename, ios::binary);
