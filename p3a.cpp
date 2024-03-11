@@ -6,8 +6,8 @@ using namespace cv;
 using namespace std;
 
 // Assuming the size of the image is known beforehand
-const int WIDTH = 247; // Example width
-const int HEIGHT = 247; // Example height
+const int WIDTH = 252; // Example width
+const int HEIGHT = 252; // Example height
 
 void binarizeImage(Mat& src, Mat& dst, double max_val) {
     double threshold = max_val * 0.5;
